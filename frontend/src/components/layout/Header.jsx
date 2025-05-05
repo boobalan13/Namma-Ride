@@ -38,7 +38,7 @@ const Header = () => {
           <div className="logo">
             <Link to="/" className="logo-link">
               <img src={logoImg} alt="Namma Ride Logo" className="logo-img rounded-logo" />
-              <span className="logo-text">Namma Ride</span>
+              <span className="logo-text">Namma Ride!</span>
             </Link>
           </div>
           <nav className="nav">
