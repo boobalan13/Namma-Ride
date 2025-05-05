@@ -39,7 +39,7 @@ const Header = () => {
           <div className="logo">
             <Link to="/" className="logo-link">
               <img src={logoImg} alt="Namma Ride Logo" className="logo-img rounded-logo" />
-              <span className="logo-text montserrat-font">NAMMA RIDE</span>
+              <span className="logo-text montserrat-font">Namma Ride!</span>
             </Link>
           </div>
           <nav className="nav">
