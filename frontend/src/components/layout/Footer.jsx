@@ -45,11 +45,11 @@ const Footer = () => {
               </li>
               <li>
                 <MdPhone />
-                <span>+1 234 567 890</span>
+                <span>+91 90800 54315</span>
               </li>
               <li>
                 <MdLocationOn />
-                <span>123 Rental Street, City</span>
+                <span>Boys Hostel ,Sri Eshwar College of Engineering ,Kinathukadavu,Coimbatore</span>
               </li>
             </ul>
           </div>
