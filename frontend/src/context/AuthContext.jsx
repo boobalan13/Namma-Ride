@@ -9,7 +9,7 @@ export const AuthProvider = ({ children }) => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
+    const token = sessionStorage.getItem('token');
     if (token) {
       loadUser();
     } else {
@@ -22,7 +22,7 @@ export const AuthProvider = ({ children }) => {
       const res = await getMe();
       setUser(res.data.data);
     } catch (err) {
-      localStorage.removeItem('token');
+      sessionStorage.removeItem('token');
       setError(err.response?.data?.message || 'Error loading user');
     } finally {
       setLoading(false);
@@ -32,7 +32,7 @@ export const AuthProvider = ({ children }) => {
   const register = async (userData) => {
     try {
       const res = await registerApi(userData);
-      localStorage.setItem('token', res.data.token);
+      sessionStorage.setItem('token', res.data.token);
       await loadUser();
       return res.data;
     } catch (err) {
@@ -44,7 +44,7 @@ export const AuthProvider = ({ children }) => {
   const login = async (userData) => {
     try {
       const res = await loginApi(userData);
-      localStorage.setItem('token', res.data.token);
+      sessionStorage.setItem('token', res.data.token);
       await loadUser();
       return res.data;
     } catch (err) {
@@ -54,7 +54,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   const logout = () => {
-    localStorage.removeItem('token');
+    sessionStorage.removeItem('token');
     setUser(null);
   };
 

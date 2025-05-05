@@ -7,7 +7,7 @@ const Home = () => {
   const [featuredCars, setFeaturedCars] = useState([]);
   const [loading, setLoading] = useState(true);
   const [imageError, setImageError] = useState({});
-  const { user } = useContext(AuthContext);
+  const { user, loading: authLoading } = useContext(AuthContext);
 
   useEffect(() => {
     const fetchFeaturedCars = async () => {
@@ -201,7 +201,7 @@ const Home = () => {
       </section>
 
       {/* CTA Section */}
-      { !user && (
+      { !user && !authLoading && (
         <section className="cta">
           <div className="container">
             <div className="cta-content">
