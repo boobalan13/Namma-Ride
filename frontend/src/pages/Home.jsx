@@ -1,11 +1,13 @@
 import { Link } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import { getCars } from '../services/api';
+import { AuthContext } from '../context/AuthContext';
 
 const Home = () => {
   const [featuredCars, setFeaturedCars] = useState([]);
   const [loading, setLoading] = useState(true);
   const [imageError, setImageError] = useState({});
+  const { user } = useContext(AuthContext);
 
   useEffect(() => {
     const fetchFeaturedCars = async () => {
@@ -199,15 +201,17 @@ const Home = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="cta">
-        <div className="container">
-          <div className="cta-content">
-            <h2>Ready to Get Started?</h2>
-            <p>Join thousands of satisfied customers who trust our service</p>
-            <Link to="/register" className="btn btn-primary">Sign Up Now</Link>
+      { !user && (
+        <section className="cta">
+          <div className="container">
+            <div className="cta-content">
+              <h2>Ready to Get Started?</h2>
+              <p>Join thousands of satisfied customers who trust our service</p>
+              <Link to="/register" className="btn btn-primary">Sign Up Now</Link>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
     </div>
   );
 };
