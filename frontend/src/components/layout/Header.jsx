@@ -2,6 +2,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useContext } from 'react';
 import { AuthContext } from '../../context/AuthContext';
 import logoImg from '../../assets/namma-ride-logo.png';
+import './Header.css';
 
 const Header = () => {
   const { user, logout } = useContext(AuthContext);
@@ -38,7 +39,7 @@ const Header = () => {
           <div className="logo">
             <Link to="/" className="logo-link">
               <img src={logoImg} alt="Namma Ride Logo" className="logo-img rounded-logo" />
-              <span className="logo-text">Namma Ride!</span>
+              <span className="logo-text montserrat-font">Namma Ride!</span>
             </Link>
           </div>
           <nav className="nav">
