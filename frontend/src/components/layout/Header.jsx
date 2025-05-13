@@ -52,9 +52,11 @@ const Header = () => {
               </li>
               {user ? (
                 <>
-                  <li>
-                    <Link to="/bookings" className={isActive('/bookings')}>My Bookings</Link>
-                  </li>
+                  {user.role !== 'admin' && (
+                    <li>
+                      <Link to="/bookings" className={isActive('/bookings')}>My Bookings</Link>
+                    </li>
+                  )}
                   {user.role === 'admin' && (
                     <li>
                       <Link to="/admin" className={isActive('/admin')}>Admin Dashboard</Link>

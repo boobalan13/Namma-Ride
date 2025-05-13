@@ -6,12 +6,14 @@ const Car = require('../models/Car');
 // @access  Private/Admin
 exports.getBookings = async (req, res) => {
     try {
-        const bookings = await Booking.find()
-            .populate('user', 'name email')
-            .populate('car', 'make model year pricePerDay');
+        let bookings;
+        if (req.user.role === 'admin') {
+            bookings = await Booking.find().populate('car', 'make model images').populate('user', 'name email');
+        } else {
+            bookings = await Booking.find({ user: req.user.id }).populate('car', 'make model images');
+        }
         res.status(200).json({
             success: true,
-            count: bookings.length,
             data: bookings
         });
     } catch (error) {
@@ -113,7 +115,8 @@ exports.createBooking = async (req, res) => {
             totalPrice,
             pickupLocation,
             dropoffLocation,
-            driverLicense
+            driverLicense,
+            paymentMethod: req.body.paymentMethod
         });
 
         // Update car availability

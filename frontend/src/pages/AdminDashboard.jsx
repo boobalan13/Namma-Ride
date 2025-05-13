@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { getCars, getBookings, createCar, deleteCar, updateCar } from '../services/api';
+import { getCars, getBookings, createCar, deleteCar, updateCar, updateBooking } from '../services/api';
 import { uploadMultipleImages } from '../services/cloudinary';
 import ProtectedRoute from '../components/ProtectedRoute';
 
@@ -158,6 +158,24 @@ const AdminDashboard = () => {
     } catch (err) {
       setError('Error fetching cars');
       setLoading(false);
+    }
+  };
+
+  const handleAcceptBooking = async (bookingId) => {
+    try {
+      await updateBooking(bookingId, { status: 'Confirmed' });
+      setBookings(bookings.map(b => b._id === bookingId ? { ...b, status: 'Confirmed' } : b));
+    } catch (err) {
+      alert('Failed to accept booking.');
+    }
+  };
+
+  const handleRejectBooking = async (bookingId) => {
+    try {
+      await updateBooking(bookingId, { status: 'Rejected' });
+      setBookings(bookings.map(b => b._id === bookingId ? { ...b, status: 'Rejected' } : b));
+    } catch (err) {
+      alert('Failed to reject booking.');
     }
   };
 
@@ -394,46 +412,39 @@ const AdminDashboard = () => {
           )}
 
           {activeTab === 'bookings' && (
-            <div className="bookings-section">
+            <div className="admin-section">
               <h2>All Bookings</h2>
-              {bookings.length === 0 ? (
-                <div className="empty-state">
-                  <div className="empty-state-icon">
-                    <i className="fas fa-calendar-times"></i>
-                  </div>
-                  <h2>No Bookings Found</h2>
-                  <p>There are no bookings in the system at the moment.</p>
-                </div>
-              ) : (
-                <div className="bookings-list">
+              <table className="admin-table">
+                <thead>
+                  <tr>
+                    <th>User</th>
+                    <th>Car</th>
+                    <th>Dates</th>
+                    <th>Status</th>
+                    <th>Payment</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
                   {bookings.map((booking) => (
-                    <div key={booking._id} className="booking-card">
-                      <div className="booking-info">
-                        <h3>{booking.car.make} {booking.car.model}</h3>
-                        <p>User: {booking.user.name}</p>
-                        <div className="booking-dates">
-                          <p>From: {formatDate(booking.startDate)}</p>
-                          <p>To: {formatDate(booking.endDate)}</p>
-                        </div>
-                        <div className="booking-status">
-                          <span className={`status ${booking.status.toLowerCase()}`}>
-                            {booking.status}
-                          </span>
-                          <p className="price">Total: ${booking.totalPrice}</p>
-                        </div>
-                      </div>
-                      <div className="booking-actions">
-                        <button
-                          className="btn btn-secondary"
-                          onClick={() => handleUpdateBooking(booking._id)}
-                        >
-                          Update Status
-                        </button>
-                      </div>
-                    </div>
+                    <tr key={booking._id}>
+                      <td>{booking.user?.name || booking.user}</td>
+                      <td>{booking.car?.make} {booking.car?.model}</td>
+                      <td>{formatDate(booking.startDate)} - {formatDate(booking.endDate)}</td>
+                      <td>{booking.status}</td>
+                      <td>{booking.paymentStatus}</td>
+                      <td>
+                        {booking.status === 'Pending' && (
+                          <>
+                            <button className="btn btn-success" onClick={() => handleAcceptBooking(booking._id)}>Accept</button>
+                            <button className="btn btn-danger" onClick={() => handleRejectBooking(booking._id)}>Reject</button>
+                          </>
+                        )}
+                      </td>
+                    </tr>
                   ))}
-                </div>
-              )}
+                </tbody>
+              </table>
             </div>
           )}
         </div>

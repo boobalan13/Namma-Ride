@@ -39,8 +39,8 @@ const bookingSchema = new mongoose.Schema({
     },
     paymentMethod: {
         type: String,
-        enum: ['Credit Card', 'Debit Card', 'PayPal', 'Bank Transfer'],
-        required: true
+        required: true,
+        enum: ['credit_card', 'debit_card', 'upi']
     },
     pickupLocation: {
         type: String,

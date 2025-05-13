@@ -51,7 +51,7 @@ const carSchema = new mongoose.Schema({
     features: [{
         type: String
     }],
-    isAvailable: {
+    availability: {
         type: Boolean,
         default: true
     },

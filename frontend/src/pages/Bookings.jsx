@@ -1,6 +1,6 @@
 import { useState, useEffect, useContext } from 'react';
 import { Link } from 'react-router-dom';
-import { getBookings, cancelBooking } from '../services/api';
+import { getBookings, cancelBooking, updateBooking } from '../services/api';
 import { AuthContext } from '../context/AuthContext';
 import ProtectedRoute from '../components/ProtectedRoute';
 
@@ -11,14 +11,20 @@ const Bookings = () => {
   const [imageError, setImageError] = useState({});
   const { user } = useContext(AuthContext);
 
+  // Redirect admin users to the admin dashboard
+  if (user && user.role === 'admin') {
+    window.location.href = '/admin';
+    return null;
+  }
+
   useEffect(() => {
     const fetchBookings = async () => {
       try {
         setLoading(true);
         setError(null);
         const res = await getBookings();
-        // Ensure we have an array of bookings
-        setBookings(Array.isArray(res.data) ? res.data : []);
+        console.log('Bookings response:', res.data);
+        setBookings(Array.isArray(res.data.data) ? res.data.data : []);
       } catch (err) {
         console.error('Error fetching bookings:', err);
         setError('Failed to load bookings. Please try again later.');
@@ -40,6 +46,17 @@ const Bookings = () => {
     } catch (err) {
       console.error('Error cancelling booking:', err);
       alert('Failed to cancel booking. Please try again.');
+    }
+  };
+
+  const handlePayNow = async (bookingId) => {
+    // Simulate payment and update paymentStatus
+    try {
+      await updateBooking(bookingId, { paymentStatus: 'Paid' });
+      setBookings(bookings.map(b => b._id === bookingId ? { ...b, paymentStatus: 'Paid' } : b));
+      alert('Payment successful!');
+    } catch (err) {
+      alert('Payment failed.');
     }
   };
 
@@ -122,7 +139,7 @@ const Bookings = () => {
               {bookings.map((booking) => (
                 <div key={booking._id} className="booking-card">
                   <div className="booking-car-image">
-                    {!imageError[booking.car._id] ? (
+                    {!imageError[booking.car?._id] && booking.car && booking.car.images && booking.car.images[0] ? (
                       <img
                         src={booking.car.images[0]}
                         alt={`${booking.car.make} ${booking.car.model}`}
@@ -132,7 +149,7 @@ const Bookings = () => {
                     ) : (
                       <div className="car-image-fallback">
                         <span className="fallback-text">
-                          {booking.car.make} {booking.car.model}
+                          {booking.car ? `${booking.car.make} ${booking.car.model}` : 'Car'}
                         </span>
                       </div>
                     )}
@@ -182,7 +199,7 @@ const Bookings = () => {
                     </div>
 
                     <div className="booking-actions">
-                      {booking.status === 'Confirmed' && (
+                      {(booking.status === 'Pending' || booking.status === 'Confirmed') && (
                         <button
                           className="btn btn-danger"
                           onClick={() => handleCancelBooking(booking._id)}
@@ -190,8 +207,16 @@ const Bookings = () => {
                           Cancel Booking
                         </button>
                       )}
+                      {booking.status === 'Confirmed' && booking.paymentStatus === 'Pending' && (
+                        <button
+                          className="btn btn-success"
+                          onClick={() => handlePayNow(booking._id)}
+                        >
+                          Pay Now
+                        </button>
+                      )}
                       <Link
-                        to={`/cars/${booking.car._id}`}
+                        to={`/cars/${booking.car?._id}`}
                         className="btn btn-secondary"
                       >
                         View Car Details

@@ -16,6 +16,7 @@ const CarDetails = () => {
     pickupLocation: '',
     dropoffLocation: '',
     driverLicense: '',
+    paymentMethod: 'credit_card', // Default payment method
   });
 
   useEffect(() => {
@@ -45,16 +46,26 @@ const CarDetails = () => {
       return;
     }
 
+    // Validate required fields
+    if (!bookingData.startDate || !bookingData.endDate || !bookingData.pickupLocation || !bookingData.dropoffLocation || !bookingData.driverLicense) {
+      alert('Please fill out all required fields.');
+      return;
+    }
+
     try {
       const booking = {
         ...bookingData,
         car: id,
-        user: user._id,
       };
+      console.log('Booking payload:', booking); // Log the payload
       await createBooking(booking);
       navigate('/bookings');
     } catch (err) {
       console.error('Error creating booking:', err);
+      alert(
+        err.response?.data?.message ||
+        'Failed to create booking. Please try again.'
+      );
     }
   };
 
@@ -109,61 +120,80 @@ const CarDetails = () => {
 
           <div className="booking-form">
             <h2>Book This Car</h2>
-            <form onSubmit={handleBookingSubmit}>
-              <div className="form-group">
-                <label>Start Date</label>
-                <input
-                  type="date"
-                  name="startDate"
-                  value={bookingData.startDate}
-                  onChange={handleBookingChange}
-                  required
-                />
+            {car.availability ? (
+              <form onSubmit={handleBookingSubmit}>
+                <div className="form-group">
+                  <label>Start Date</label>
+                  <input
+                    type="date"
+                    name="startDate"
+                    value={bookingData.startDate}
+                    onChange={handleBookingChange}
+                    required
+                  />
+                </div>
+                <div className="form-group">
+                  <label>End Date</label>
+                  <input
+                    type="date"
+                    name="endDate"
+                    value={bookingData.endDate}
+                    onChange={handleBookingChange}
+                    required
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Pickup Location</label>
+                  <input
+                    type="text"
+                    name="pickupLocation"
+                    value={bookingData.pickupLocation}
+                    onChange={handleBookingChange}
+                    required
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Dropoff Location</label>
+                  <input
+                    type="text"
+                    name="dropoffLocation"
+                    value={bookingData.dropoffLocation}
+                    onChange={handleBookingChange}
+                    required
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Driver's License Number</label>
+                  <input
+                    type="text"
+                    name="driverLicense"
+                    value={bookingData.driverLicense}
+                    onChange={handleBookingChange}
+                    required
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Payment Method</label>
+                  <select
+                    name="paymentMethod"
+                    value={bookingData.paymentMethod}
+                    onChange={handleBookingChange}
+                    required
+                  >
+                    <option value="credit_card">Credit Card</option>
+                    <option value="debit_card">Debit Card</option>
+                    <option value="upi">UPI</option>
+                  </select>
+                </div>
+                <button type="submit" className="btn btn-primary">
+                  Book Now
+                </button>
+              </form>
+            ) : (
+              <div className="unavailable-message">
+                <p>This car is currently unavailable for booking.</p>
               </div>
-              <div className="form-group">
-                <label>End Date</label>
-                <input
-                  type="date"
-                  name="endDate"
-                  value={bookingData.endDate}
-                  onChange={handleBookingChange}
-                  required
-                />
-              </div>
-              <div className="form-group">
-                <label>Pickup Location</label>
-                <input
-                  type="text"
-                  name="pickupLocation"
-                  value={bookingData.pickupLocation}
-                  onChange={handleBookingChange}
-                  required
-                />
-              </div>
-              <div className="form-group">
-                <label>Dropoff Location</label>
-                <input
-                  type="text"
-                  name="dropoffLocation"
-                  value={bookingData.dropoffLocation}
-                  onChange={handleBookingChange}
-                  required
-                />
-              </div>
-              <div className="form-group">
-                <label>Driver's License Number</label>
-                <input
-                  type="text"
-                  name="driverLicense"
-                  value={bookingData.driverLicense}
-                  onChange={handleBookingChange}
-                  required
-                />
-              </div>
-              <button type="submit" className="btn btn-primary">
-                Book Now
-              </button>
-            </form>
+            )}
           </div>
         </div>
       </div>
